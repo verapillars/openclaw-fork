@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import {
   resolveAgentConfig,
   resolveAgentDir,
@@ -520,11 +521,12 @@ export async function runCronIsolatedAgentTurn(params: {
   let runEndedAt = runStartedAt;
   try {
     const sessionFile = resolveSessionTranscriptPath(cronSession.sessionEntry.sessionId, agentId);
+    const runId = crypto.randomUUID();
     const resolvedVerboseLevel =
       normalizeVerboseLevel(cronSession.sessionEntry.verboseLevel) ??
       normalizeVerboseLevel(agentCfg?.verboseDefault) ??
       "off";
-    registerAgentRunContext(cronSession.sessionEntry.sessionId, {
+    registerAgentRunContext(runId, {
       sessionKey: agentSessionKey,
       verboseLevel: resolvedVerboseLevel,
     });
@@ -543,7 +545,7 @@ export async function runCronIsolatedAgentTurn(params: {
         cfg: cfgWithAgentDefaults,
         provider,
         model,
-        runId: cronSession.sessionEntry.sessionId,
+        runId,
         agentDir,
         fallbacksOverride:
           payloadFallbacks ?? resolveAgentModelFallbacksOverride(params.cfg, agentId),
@@ -574,7 +576,7 @@ export async function runCronIsolatedAgentTurn(params: {
               model: modelOverride,
               thinkLevel,
               timeoutMs,
-              runId: cronSession.sessionEntry.sessionId,
+              runId,
               cliSessionId,
               bootstrapPromptWarningSignaturesSeen,
               bootstrapPromptWarningSignature,
@@ -610,7 +612,7 @@ export async function runCronIsolatedAgentTurn(params: {
             timeoutMs,
             bootstrapContextMode: agentPayload?.lightContext ? "lightweight" : undefined,
             bootstrapContextRunKind: "cron",
-            runId: cronSession.sessionEntry.sessionId,
+            runId,
             requireExplicitMessageTarget: toolPolicy.requireExplicitMessageTarget,
             disableMessageTool: toolPolicy.disableMessageTool,
             allowTransientCooldownProbe: runOptions?.allowTransientCooldownProbe,
