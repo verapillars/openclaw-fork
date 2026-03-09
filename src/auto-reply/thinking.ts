@@ -32,6 +32,13 @@ export const XHIGH_MODEL_REFS = [
   "openai-codex/gpt-5.1-codex",
   "github-copilot/gpt-5.2-codex",
   "github-copilot/gpt-5.2",
+  // Added by verapillars fork: xhigh thinking support for Anthropic + Novita models
+  "anthropic/claude-opus-4-6",
+  "anthropic/claude-sonnet-4-6",
+  "novita/zai-org/glm-5",
+  "novita/moonshotai/kimi-k2.5",
+  "novita/minimax/minimax-m2.5",
+  "novita/qwen/qwen3.5-397b-a17b",
 ] as const;
 
 const XHIGH_MODEL_SET = new Set(XHIGH_MODEL_REFS.map((entry) => entry.toLowerCase()));
