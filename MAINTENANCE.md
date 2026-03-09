@@ -21,21 +21,51 @@ Adds extended thinking (`effort: "max"`) support for:
 When a new upstream release is published:
 
 ```bash
-# 1. Fetch and merge upstream
+# 1. Fetch and preview
 cd /tmp/openclaw-fork
 git fetch upstream --tags
+git log HEAD..upstream/main --oneline  # See what's new
+```
+
+### 2. Pre-Merge Patch Analysis (CRITICAL)
+
+For each patched file, diff against upstream:
+
+```bash
+git diff upstream/main -- src/auto-reply/thinking.ts
+```
+
+Classify each patch:
+- ✅ **Still needed** — Upstream doesn't have this feature
+- ❌ **No longer needed** — Upstream added equivalent (drop our patch)
+- ⚠️ **Needs adaptation** — Upstream changed file structure (rebuild patch)
+
+Document findings before merging.
+
+### 3. Merge
+
+```bash
 git merge upstream/main
+# Resolve conflicts if any
+# Apply adaptations identified in step 2
+```
 
-# 2. Resolve conflicts if any (especially in src/auto-reply/thinking.ts)
-# Verify our model additions are still present
+### 4. Post-Merge Validation
 
-# 3. Test build (optional but recommended)
+```bash
+# Verify patches still present
 pnpm install && pnpm build
+```
 
-# 4. Push fork
+### 5. Push Fork
+
+```bash
 git push origin main
+```
 
-# 5. Update Homebrew tap
+### 6. Update Homebrew Tap
+
+```bash
 cd /tmp/homebrew-tap
 REV=$(cd /tmp/openclaw-fork && git log -1 --format="%H")
 # Edit Formula/openclaw-fork.rb: update revision and version
